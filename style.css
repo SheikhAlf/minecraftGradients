@@ -1,0 +1,30 @@
+body {
+    background-color: white;
+}
+
+@font-face {
+    font-family: "title";
+    src: url("./Minecraft.ttf");
+    font-weight: 400;
+    font-style: normal;
+}
+
+#gallery, #localValues {
+    display: flex;
+}
+
+img {
+    image-rendering: pixelated;
+}
+
+img, canvas {
+    width: 64px;
+    height: 64px;
+}
+
+#title {
+    display: flex;
+    justify-content: center;
+    font-family: "title", Helvetica;
+    font-size: 100px;
+}
