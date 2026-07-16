@@ -46,7 +46,35 @@ def js_round(x: float) -> int:
     return math.floor(x + 0.5)
 
 
+def rgb_to_lab(r: float, g: float, b: float):
+    """Port of the JS rgbToLab() math in script.js, so Lab can be baked into
+    the JSON once here instead of being recomputed in the browser on every
+    gradient call. Only r/g/b are used (alpha is ignored), matching the JS."""
+
+    def to_linear(v):
+        v = v / 255
+        return ((v + 0.055) / 1.055) ** 2.4 if v > 0.04045 else v / 12.92
+
+    rl, gl, bl = to_linear(r), to_linear(g), to_linear(b)
+
+    x = (rl * 0.4124 + gl * 0.3576 + bl * 0.1805) / 0.95047
+    y = (rl * 0.2126 + gl * 0.7152 + bl * 0.0722) / 1.00000
+    z = (rl * 0.0193 + gl * 0.1192 + bl * 0.9505) / 1.08883
+
+    def f(t):
+        return t ** (1 / 3) if t > 0.008856 else (7.787 * t) + 16 / 116
+
+    fx, fy, fz = f(x), f(y), f(z)
+
+    return {
+        "l": round(116 * fy - 16, 3),
+        "a": round(500 * (fx - fy), 3),
+        "b": round(200 * (fy - fz), 3),
+    }
+
+
 def get_local_value(img: Image.Image):
+
     """Port of the JS getLocalValue() function.
 
     - color.{r,g,b} = alpha-weighted average of that channel
@@ -115,6 +143,7 @@ def main():
                 "name": name,
                 "url": f"{URL_PREFIX}{name}",
                 "localValue": color,
+                "lab": rgb_to_lab(color["r"], color["g"], color["b"]),
                 "isSolid": is_solid,
             }
         )
