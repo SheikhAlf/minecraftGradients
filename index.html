@@ -9,11 +9,22 @@
 </head>
 <body>
     <h1 id="title">MC Gradients</h1>
-    <input id="start" type="color">
-    <input id="destination" type="color">
-    <button id="done">Create gradient</button>
-    <button id="clearCache">Clear cache data</button>
-    <input id="filterNonBlocks" type="checkbox" >Filter non blocks</button>
+
+    <div id="gradientSettings">
+        <div id="gradientCreation">
+            <input id="start" type="color">
+            <input id="destination" type="color">
+            <button id="done">Create gradient</button>
+        </div>
+        <div id="gradientFilter">
+            <label for="allBlocks">Include every texture</label>
+            <input id="allBlocks" type="checkbox" name="allBlocks">
+        </div>
+        <div id="gradientSize">
+            <label for="size">Gradient size</label>
+            <input id="size" type="range" name="size" min="1" max="20">
+        </div>
+    </div>
 
     <div id="result"></div>
 </body>

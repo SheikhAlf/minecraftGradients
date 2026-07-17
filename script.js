@@ -1,5 +1,5 @@
 (async () => {
-    if (localStorage.getItem('data') === null) {
+    if (!localStorage.getItem('data')) {
         const response = await fetch('blocks.json');
         const blocks = await response.json();
         localStorage.setItem('data', JSON.stringify(blocks));
@@ -14,25 +14,28 @@
     const result = document.querySelector('#result');
 
     const enterButton = document.querySelector('#done');
-    const filterNonSolidCheckbox = document.querySelector('#filterNonBlocks');
+    const allBlocksCheckbox = document.querySelector('#allBlocks');
+    const gradientSizeSlider = document.querySelector('#size');
 
     enterButton.addEventListener('click', renderGradient);
-    filterNonSolidCheckbox.addEventListener('click', () => {
-        if (result.innerHTML === '') {
+    allBlocksCheckbox.addEventListener('click', () => {
+        if (!result.innerHTML) {
+            return;
+        }
+        renderGradient();
+    });
+    gradientSizeSlider.addEventListener('input', () => {
+        if (!result.innerHTML) {
             return;
         }
         renderGradient();
     });
 
-    const clearCacheButton = document.querySelector('#clearCache');
-    clearCacheButton.addEventListener('click', () => {
-        localStorage.clear();
-    });
-
     function renderGradient() {
         result.innerHTML = '';
-        const source = filterNonSolidCheckbox.checked ? blocksSolid : blocksAll;
-        const gradient = createGradient(startColor.value, destColor.value, source);
+        const source = allBlocksCheckbox.checked ? blocksAll : blocksSolid;
+        const steps = Number(gradientSizeSlider.value);
+        const gradient = createGradient(startColor.value, destColor.value, source, steps + 2);
         gradient.forEach(block => {
             const texture = document.createElement('img');
             texture.src = block.url;
@@ -41,7 +44,6 @@
             result.appendChild(texture);
         });
     }
-
 
     function createGradient(startHex, destHex, blocks, steps = 10) {
         const startLab = hexToLab(startHex);
@@ -73,7 +75,7 @@
 
     function labDistance(c1, c2) {
         return Math.hypot(c1.l - c2.l, c1.a - c2.a, c1.b - c2.b);
-    }
+    }1
 
     function hexToLab(hex) {
         const n = parseInt(hex.slice(1), 16);
