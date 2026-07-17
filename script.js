@@ -1,11 +1,18 @@
 (async () => {
-    if (!localStorage.getItem('data')) {
-        const response = await fetch('blocks.json');
-        const blocks = await response.json();
-        localStorage.setItem('data', JSON.stringify(blocks));
-    }
+    const DATA_VERSION = '1'; // bump this whenever blocks.json changes on the server
 
-    const blocksAll = JSON.parse(localStorage.getItem('data'));
+    let blocksAll;
+    const cachedVersion = localStorage.getItem('dataVersion');
+    const cached = localStorage.getItem('data');
+
+    if (cached && cachedVersion === DATA_VERSION) {
+        blocksAll = JSON.parse(cached);
+    } else {
+        const response = await fetch('blocks.json');
+        blocksAll = await response.json();
+        localStorage.setItem('data', JSON.stringify(blocksAll));
+        localStorage.setItem('dataVersion', DATA_VERSION);
+    }
 
     const blocksSolid = blocksAll.filter(b => b.isSolid);
 
@@ -24,6 +31,7 @@
         }
         renderGradient();
     });
+
     gradientSizeSlider.addEventListener('input', () => {
         if (!result.innerHTML) {
             return;
@@ -32,17 +40,21 @@
     });
 
     function renderGradient() {
-        result.innerHTML = '';
         const source = allBlocksCheckbox.checked ? blocksAll : blocksSolid;
         const steps = Number(gradientSizeSlider.value);
         const gradient = createGradient(startColor.value, destColor.value, source, steps + 2);
+
+        const fragment = document.createDocumentFragment();
         gradient.forEach(block => {
             const texture = document.createElement('img');
             texture.src = block.url;
             texture.alt = block.name;
             texture.loading = 'lazy';
-            result.appendChild(texture);
+            texture.decoding = 'async';
+            fragment.appendChild(texture);
         });
+
+        result.replaceChildren(fragment);
     }
 
     function createGradient(startHex, destHex, blocks, steps = 10) {
@@ -75,7 +87,7 @@
 
     function labDistance(c1, c2) {
         return Math.hypot(c1.l - c2.l, c1.a - c2.a, c1.b - c2.b);
-    }1
+    }
 
     function hexToLab(hex) {
         const n = parseInt(hex.slice(1), 16);

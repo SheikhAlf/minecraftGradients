@@ -4,8 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MC gradients</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preload" href="blocks.json" as="fetch" crossorigin>
+    <link rel="preload" href="Minecraft.ttf" as="font" type="font/ttf" crossorigin>
     <script src="script.js" defer></script>
+    <style>
+        body {
+            background-color: white;
+        }
+
+        @font-face {
+            font-family: "title";
+            src: url("./Minecraft.ttf");
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        img {
+            image-rendering: pixelated;
+            width: 64px;
+            height: 64px;
+        }
+
+        #title {
+            display: flex;
+            justify-content: center;
+            font-family: "title", Helvetica;
+            font-size: 100px;
+        }
+
+        #gradientSettings {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+        }
+
+        #gradientCreation, #gradientFilter, #gradientSize {
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        #result {
+            display: flex;
+            justify-content: center;
+            margin-top: 35px;
+        }
+    </style>
 </head>
 <body>
     <h1 id="title">MC Gradients</h1>
